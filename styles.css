@@ -1,0 +1,17 @@
+/* 클릭 가능 노드 시각적 표시 */
+.mermaid-clickable {
+  cursor: pointer !important;
+}
+
+.mermaid-clickable:hover .nodeLabel {
+  text-decoration: underline;
+  text-decoration-color: rgba(66, 135, 245, 0.7);
+  text-underline-offset: 2px;
+}
+
+/* 파일 경로 텍스트 강조 */
+.mermaid-clickable .nodeLabel i,
+.mermaid-clickable .nodeLabel em {
+  color: #4287f5;
+  font-size: 0.85em;
+}

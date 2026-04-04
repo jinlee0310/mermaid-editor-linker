@@ -1,0 +1,20 @@
+{
+  "name": "obsidian-mermaid-vscode-linker",
+  "version": "1.0.0",
+  "description": "Mermaid 다이어그램 노드 클릭 시 VS Code에서 소스코드 열기",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production"
+  },
+  "keywords": [],
+  "author": "jinlee",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "builtin-modules": "^5.0.0",
+    "esbuild": "^0.28.0",
+    "obsidian": "^1.12.3",
+    "typescript": "^6.0.2"
+  }
+}
