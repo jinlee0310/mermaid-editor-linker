@@ -108,7 +108,7 @@ export default class MermaidVSCodeLinkerPlugin extends Plugin {
     const editorPath = this.settings.customEditorPath
       ? this.settings.customEditorPath
       : this.resolveEditorPath(this.settings.editor);
-    const command = `${editorPath} "${filePath}"`;
+    const command = `"${editorPath}" "${filePath}"`;
 
     exec(command, (err: Error | null) => {
       if (err) {

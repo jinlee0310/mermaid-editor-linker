@@ -182,7 +182,7 @@ var MermaidVSCodeLinkerPlugin = class extends import_obsidian2.Plugin {
       return;
     }
     const editorPath = this.settings.customEditorPath ? this.settings.customEditorPath : this.resolveEditorPath(this.settings.editor);
-    const command = `${editorPath} "${filePath}"`;
+    const command = `"${editorPath}" "${filePath}"`;
     exec(command, (err) => {
       if (err) {
         new import_obsidian2.Notice(`Failed to open editor: ${err.message}`);
