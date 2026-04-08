@@ -31,7 +31,16 @@ var DEFAULT_SETTINGS = {
   editor: "code",
   customEditorPath: "",
   clickModifier: "none",
-  directoryPrefixes: "app,features,components,hooks,store,lib,utils,constants"
+  directoryPrefixes: [
+    "app",
+    "features",
+    "components",
+    "hooks",
+    "store",
+    "lib",
+    "utils",
+    "constants"
+  ]
 };
 var MermaidLinkerSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
@@ -59,12 +68,27 @@ var MermaidLinkerSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Directory Prefixes").setDesc("Comma-separated directory names to match in Mermaid nodes").addText(
-      (text) => text.setPlaceholder("app,features,components,hooks,store").setValue(this.plugin.settings.directoryPrefixes).onChange(async (value) => {
-        this.plugin.settings.directoryPrefixes = value;
+    new import_obsidian.Setting(containerEl).setName("Directory Prefixes").setDesc("Directory names to match in Mermaid nodes").addButton(
+      (button) => button.setButtonText("+ Add").setCta().onClick(async () => {
+        this.plugin.settings.directoryPrefixes.push("");
         await this.plugin.saveSettings();
+        this.display();
       })
     );
+    this.plugin.settings.directoryPrefixes.forEach((prefix, index) => {
+      new import_obsidian.Setting(containerEl).addText(
+        (text) => text.setPlaceholder("e.g. components").setValue(prefix).onChange(async (value) => {
+          this.plugin.settings.directoryPrefixes[index] = value;
+          await this.plugin.saveSettings();
+        })
+      ).addExtraButton(
+        (button) => button.setIcon("trash").setTooltip("Remove").onClick(async () => {
+          this.plugin.settings.directoryPrefixes.splice(index, 1);
+          await this.plugin.saveSettings();
+          this.display();
+        })
+      );
+    });
     new import_obsidian.Setting(containerEl).setName("Click Modifier").setDesc("Modifier key required for click (none = direct click)").addDropdown(
       (dropdown) => dropdown.addOption("none", "None (direct click)").addOption("ctrl", "Ctrl + Click").addOption("cmd", "Cmd + Click").setValue(this.plugin.settings.clickModifier).onChange(async (value) => {
         this.plugin.settings.clickModifier = value;
@@ -111,7 +135,7 @@ var MermaidVSCodeLinkerPlugin = class extends import_obsidian2.Plugin {
     }
   }
   buildFilePathRegex() {
-    const prefixes = this.settings.directoryPrefixes.split(",").map((s) => s.trim()).filter(Boolean).map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const prefixes = this.settings.directoryPrefixes.map((s) => s.trim()).filter(Boolean).map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
     if (prefixes.length === 0) return null;
     return new RegExp(`((?:${prefixes.join("|")})\\/[\\w\\-\\/\\.]+\\.\\w+)`);
   }
@@ -185,6 +209,9 @@ var MermaidVSCodeLinkerPlugin = class extends import_obsidian2.Plugin {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     if (this.settings.editor === "vscode") {
       this.settings.editor = "code";
+    }
+    if (typeof this.settings.directoryPrefixes === "string") {
+      this.settings.directoryPrefixes = this.settings.directoryPrefixes.split(",").map((s) => s.trim()).filter(Boolean);
     }
     this.refreshRegex();
   }

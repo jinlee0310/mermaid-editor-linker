@@ -6,7 +6,7 @@ export interface MermaidLinkerSettings {
   editor: string;
   customEditorPath: string;
   clickModifier: "none" | "ctrl" | "cmd";
-  directoryPrefixes: string;
+  directoryPrefixes: string[];
 }
 
 export const DEFAULT_SETTINGS: MermaidLinkerSettings = {
@@ -14,7 +14,16 @@ export const DEFAULT_SETTINGS: MermaidLinkerSettings = {
   editor: "code",
   customEditorPath: "",
   clickModifier: "none",
-  directoryPrefixes: "app,features,components,hooks,store,lib,utils,constants",
+  directoryPrefixes: [
+    "app",
+    "features",
+    "components",
+    "hooks",
+    "store",
+    "lib",
+    "utils",
+    "constants",
+  ],
 };
 
 export class MermaidLinkerSettingTab extends PluginSettingTab {
@@ -72,16 +81,40 @@ export class MermaidLinkerSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Directory Prefixes")
-      .setDesc("Comma-separated directory names to match in Mermaid nodes")
-      .addText((text) =>
-        text
-          .setPlaceholder("app,features,components,hooks,store")
-          .setValue(this.plugin.settings.directoryPrefixes)
-          .onChange(async (value) => {
-            this.plugin.settings.directoryPrefixes = value;
+      .setDesc("Directory names to match in Mermaid nodes")
+      .addButton((button) =>
+        button
+          .setButtonText("+ Add")
+          .setCta()
+          .onClick(async () => {
+            this.plugin.settings.directoryPrefixes.push("");
             await this.plugin.saveSettings();
+            this.display();
           })
       );
+
+    this.plugin.settings.directoryPrefixes.forEach((prefix, index) => {
+      new Setting(containerEl)
+        .addText((text) =>
+          text
+            .setPlaceholder("e.g. components")
+            .setValue(prefix)
+            .onChange(async (value) => {
+              this.plugin.settings.directoryPrefixes[index] = value;
+              await this.plugin.saveSettings();
+            })
+        )
+        .addExtraButton((button) =>
+          button
+            .setIcon("trash")
+            .setTooltip("Remove")
+            .onClick(async () => {
+              this.plugin.settings.directoryPrefixes.splice(index, 1);
+              await this.plugin.saveSettings();
+              this.display();
+            })
+        );
+    });
 
     new Setting(containerEl)
       .setName("Click Modifier")

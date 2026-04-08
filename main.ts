@@ -48,7 +48,6 @@ export default class MermaidVSCodeLinkerPlugin extends Plugin {
 
   private buildFilePathRegex(): RegExp | null {
     const prefixes = this.settings.directoryPrefixes
-      .split(",")
       .map((s) => s.trim())
       .filter(Boolean)
       .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
@@ -148,6 +147,16 @@ export default class MermaidVSCodeLinkerPlugin extends Plugin {
     // Migrate old "vscode" enum value to CLI command
     if (this.settings.editor === "vscode") {
       this.settings.editor = "code";
+    }
+
+    // Migrate old comma-separated string to array
+    if (typeof (this.settings.directoryPrefixes as unknown) === "string") {
+      this.settings.directoryPrefixes = (
+        this.settings.directoryPrefixes as unknown as string
+      )
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
     }
 
     this.refreshRegex();
