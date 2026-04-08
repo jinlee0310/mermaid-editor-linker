@@ -1,7 +1,7 @@
 {
   "id": "mermaid-vscode-linker",
   "name": "Mermaid Editor Linker",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "minAppVersion": "0.15.0",
   "description": "Click Mermaid diagram nodes to open source files in your editor",
   "author": "jinlee",
